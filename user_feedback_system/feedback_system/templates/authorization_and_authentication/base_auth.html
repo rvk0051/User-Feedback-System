@@ -1,0 +1,93 @@
+<!-- Base template for authentication pages (login, register, etc.) -->
+{% load static %}  <!-- Enable Django's static files handling -->
+<!DOCTYPE html>
+<html lang="en">  <!-- Set language to English for accessibility -->
+<head>
+    <!-- Essential meta tags -->
+    <meta charset="UTF-8">  <!-- Character encoding for proper text rendering -->
+    <title>{% block title %}{% endblock %}</title>  <!-- Placeholder for page-specific titles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">  <!-- Responsive design support -->
+
+    <!-- Include Bootstrap CSS from static files -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+
+    <!-- Custom CSS styles -->
+    <style>
+        /* Full-height gradient background */
+        body {
+            background: linear-gradient(to right, #e0f7fa, #f1f8e9);  /* Soothing gradient background */
+            min-height: 100vh;  /* Full viewport height */
+            display: flex;  /* Enable flexbox */
+            align-items: center;  /* Vertical centering */
+            justify-content: center;  /* Horizontal centering */
+        }
+
+        /* Card container for auth forms */
+        .auth-card {
+            width: 100%;  /* Full width on mobile */
+            max-width: 450px;  /* Maximum width on larger screens */
+            background-color: white;  /* White background for content */
+            border-radius: 12px;  /* Rounded corners */
+            padding: 30px;  /* Inner spacing */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);  /* Subtle elevation effect */
+        }
+
+        /* Styling for card title */
+        .auth-title {
+            font-weight: 600;  /* Semi-bold text */
+            text-align: center;  /* Center alignment */
+            margin-bottom: 25px;  /* Bottom spacing */
+            color: #00796b;  /* Teal color for title */
+        }
+
+        /* Form input styling */
+        .form-control {
+            border-radius: 10px;  /* Rounded corners for inputs */
+        }
+
+        /* Button styling */
+        .btn-primary {
+            border-radius: 10px;  /* Rounded corners for buttons */
+        }
+
+        /* Footer text styling */
+        .footer-note {
+            text-align: center;  /* Center alignment */
+            margin-top: 20px;  /* Top spacing */
+            font-size: 14px;  /* Smaller text size */
+        }
+
+        /* Link styling */
+        a {
+            color: #00796b;  /* Teal color for links */
+        }
+    </style>
+</head>
+<body>
+    <!-- Main content card -->
+    <div class="auth-card">
+        <!-- Messages section for displaying alerts/notifications -->
+        {% if messages %}
+            {% for message in messages %}
+                <!-- Bootstrap alert component -->
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}  <!-- Display message content -->
+                    <!-- Close button for alert -->
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Main content block for child templates -->
+        {% block content %}{% endblock %}
+
+        <!-- Footer block for child templates -->
+        {% block footer %}
+        <!-- Can be overridden in child templates -->
+        {% endblock %}
+    </div>
+
+    <!-- Include Bootstrap JavaScript -->
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

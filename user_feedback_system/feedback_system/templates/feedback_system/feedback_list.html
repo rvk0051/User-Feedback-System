@@ -1,0 +1,115 @@
+{% extends "feedback_system/base.html" %}
+{% load feedback_tags %}
+{% block title %}Your Feedback{% endblock %}
+
+{% block content %}
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control" placeholder="Search by keyword..." value="{{ search }}">
+    </div>
+
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Status</option>
+            <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Reviewed" {% if status == 'Reviewed' %}selected{% endif %}>Reviewed</option>
+            <option value="Resolved" {% if status == 'Resolved' %}selected{% endif %}>Resolved</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select name="sort" class="form-select">
+            <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest First</option>
+            <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Oldest First</option>
+            <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A-Z</option>
+            <option value="-title" {% if sort == '-title' %}selected{% endif %}>Title Z-A</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" formmethod="post" formaction="{% url 'export_feedback_csv' %}" class="btn btn-outline-success">
+            {% if user.is_staff %}
+                <i class="bi bi-download"></i> Export All Feedback to CSV
+            {% else %}
+                <i class="bi bi-download"></i> Export My Feedback to CSV
+            {% endif %}
+        </button>
+        {% csrf_token %}
+    </div>
+</form>
+
+<!-- Feedback Table -->
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if feedbacks %}
+                {% for feedback in feedbacks %}
+                    <tr>
+                        <td>{{ feedback.title }}</td>
+                        <td>
+                            {% if feedback.status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif feedback.status == 'Reviewed' %}
+                                <span class="badge bg-info text-dark">Reviewed</span>
+                            {% elif feedback.status == 'Resolved' %}
+                                <span class="badge bg-success">Resolved</span>
+                            {% else %}
+                                {{ feedback.status }}
+                            {% endif %}
+                        </td>
+                        <td>{{ feedback.created_at|date:"Y-m-d H:i" }}</td>
+                        <td>{{ feedback.description }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No feedbacks found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1&search={{ search }}&status={{ status }}&sort={{ sort }}">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ status }}&sort={{ sort }}">Previous</a>
+            </li>
+        {% endif %}
+
+        {% for page_num in page_range %}
+            <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                <a class="page-link" href="?page={{ page_num }}&search={{ search }}&status={{ status }}&sort={{ sort }}">{{ page_num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ status }}&sort={{ sort }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ paginator.num_pages }}&search={{ search }}&status={{ status }}&sort={{ sort }}">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

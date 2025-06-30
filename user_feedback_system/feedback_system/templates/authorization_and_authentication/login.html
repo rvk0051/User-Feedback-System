@@ -1,0 +1,22 @@
+{# templates/authorization_and_authentication/login.html #}
+{% extends 'authorization_and_authentication/base_auth.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }} {# Renders form fields styled via Bootstrap #}
+
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block footer %}
+<div class="footer-note">
+    Don't have an account?
+    <a href="{% url 'register' %}">Register here</a>
+</div>
+{% endblock %}
